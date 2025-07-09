@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Over</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            height: 100vh;
+            background-color: #000000;
+            overflow: hidden;
+            animation: fadeIn 10s forwards;
+        }
+
+        @font-face {
+            font-family: "bpx"; 
+            src: url('dogicabold.ttf') format('truetype');
+        }
+
+        @font-face {
+            font-family: "px"; 
+            src: url('dogica.ttf') format('truetype');
+        }
+
+        .menu-screen {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 30px;
+            border-radius: 10px;
+            color: white;
+        }
+
+        #start-btn {
+            background-color: black;
+            color: white;
+            font-size: 20px;
+            padding: 10px 20px;
+            border: 3px solid white;
+            cursor: pointer;
+            border-radius: 5px;
+            font-family: "px";
+            transition: background-color 0.3s ease, color 0.3s ease, border 0.3s ease, opacity 1s ease;
+            margin-left: 570px;
+        }
+
+        #start-btn.fade {
+            opacity: 0; 
+        }
+
+        #start-btn:hover {
+            background-color: white;
+            color: black;
+            border: 3px solid black;
+        }
+
+        .title {
+            font-size: 100px;
+            font-family: "bpx";
+            animation: moveUpDown 3s ease-in-out infinite;
+            text-align: center;
+            width: 500px;
+            margin-left: 730px;
+            margin-top: 250px;
+        }
+
+        @keyframes moveUpDown {
+            0% { transform: translate(-50%, -50%); }
+            50% { transform: translate(-50%, -55%); }
+            100% { transform: translate(-50%, -50%); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body class="menuBody">
+    <div class="menu-screen">
+        <h1 class="title">You Win!</h1>
+        <br>
+    </div>
+
+</body>
+</html>

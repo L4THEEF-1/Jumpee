@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Level 3</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      image-rendering: pixelated;
+    }
+
+    body {
+      background: #000;
+      overflow: hidden;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Courier New', monospace;
+    }
+
+    .fade-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: black;
+      z-index: 1000;
+      animation: initialFade 2s forwards;
+    }
+
+    @keyframes initialFade {
+      0% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+
+    .game-container {
+      width: 800px;
+      height: 400px;
+      position: relative;
+      border: 2px solid #fff;
+      overflow: hidden;
+      background: #000;
+    }
+    .smoke-particle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: #555;
+  /* Removed border-radius to make square */
+  opacity: 0.7;
+  z-index: 90;
+  animation: smokeFade 1.5s forwards;
+}
+
+@keyframes smokeFade {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+    #player {
+      position: absolute;
+      width: 100px;
+      height: 64px;
+      z-index: 100;
+      transition: left 0.1s, top 0.1s;
+    }
+
+    #player img {
+      width: 100%;
+      height: 100%;
+    }
+
+    .flipped img {
+      transform: scaleX(-1);
+    }
+
+    #boss {
+      position: absolute;
+      left: 70%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 280px;
+      height: 380px;
+      overflow: hidden;
+      z-index: 50;
+    }
+
+    #boss img {
+      width: 100%;
+      height: 140%;
+      object-position: center top;
+    }
+
+    .phase-transition {
+      animation: phaseGlow 1s;
+    }
+
+    @keyframes phaseGlow {
+      0% { filter: brightness(1); }
+      50% { transform: translate(-50%, -50%) scale(1.4); filter: brightness(2) drop-shadow(0 0 30px yellow); }
+      100% { transform: translate(-50%, -50%) scale(1); filter: brightness(1); }
+    }
+
+    .hearts {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+      width: 300px;
+      z-index: 200;
+    }
+
+    .heart {
+      width: 30px;
+      height: 30px;
+    }
+
+    .phase-display {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      color: white;
+      font-size: 16px;
+      text-shadow: 0 0 5px red;
+      font-family: 'bpx', monospace;
+      z-index: 200;
+      animation: phaseTextPulse 1s infinite;
+    }
+
+    @keyframes phaseTextPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    .attack {
+      position: absolute;
+    }
+
+    .petal {
+      width: 16px;
+      height: 16px;
+      background: linear-gradient(45deg, #ffd700, #ff6b6b);
+      clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+      animation: petalSpin 2s linear infinite;
+    }
+
+    .pollen-cloud {
+  width: 16px;
+  height: 16px;
+  background: #ffff00;
+  box-shadow: 0 0 8px #ffff00;
+  position: absolute;
+}
+
+.thorn {
+  width: 8px;
+  height: 24px;
+  background: linear-gradient(#8a2be2, #4b0082);
+  box-shadow: 0 0 5px #8a2be2;
+  animation: thornFall 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+    .vine {
+  width: 6px;
+  height: 0;
+  background: linear-gradient(to top, #32cd32, #228b22);
+  position: absolute;
+  bottom: 0;
+  transform-origin: bottom center;
+}
+
+    .corrosive {
+      width: 1px;
+      height: 1px;
+      background: radial-gradient(#32cd32, #228b22);
+      animation: corrosiveBloom 2s forwards;
+    }
+
+    .vortex {
+      width: 100px;
+      height: 100px;
+      border: 4px solid #9400d3;
+      border-radius: 50%;
+      animation: vortexSpin 3s linear infinite;
+      box-shadow: 0 0 20px #9400d3;
+    }
+
+    .laser {
+      width: 4px;
+      height: 400px;
+      background: linear-gradient(to bottom, #00ff00, rgba(0, 255, 0, 0.5));
+      box-shadow: 0 0 15px #00ff00;
+      animation: laserSweep 2s linear infinite;
+    }
+
+    .vortex-indicator {
+      position: absolute;
+      border: 2px solid rgba(255, 255, 255, 0.5);
+      border-radius: 50%;
+      animation: indicatorPulse 1s forwards;
+    }
+
+    @keyframes petalSpin {
+      0% { transform: rotate(0deg) scale(1); }
+      100% { transform: rotate(720deg) scale(1.5); opacity: 0; }
+    }
+
+    @keyframes thornFall {
+      0% { transform: translateY(-100px) rotate(45deg); opacity: 0; }
+      100% { transform: translateY(500px) rotate(45deg); opacity: 1; }
+    }
+
+    @keyframes corrosiveBloom {
+      0% { transform: scale(0); opacity: 1; }
+      100% { transform: scale(8); opacity: 0; }
+    }
+
+    @keyframes vortexSpin {
+      0% { transform: rotate(0deg) scale(1); }
+      100% { transform: rotate(360deg) scale(1.5); }
+    }
+
+    @keyframes laserSweep {
+      0% { transform: translateX(-400px) rotate(45deg); }
+      100% { transform: translateX(800px) rotate(45deg); }
+    }
+
+    @keyframes vineGrow {
+      0% { height: 0; }
+      100% { height: 300px; }
+    }
+
+    @keyframes cloudFloat {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(400px); }
+    }
+
+    @keyframes indicatorPulse {
+      0% { transform: scale(0); opacity: 0.5; }
+      100% { transform: scale(2); opacity: 0; }
+    }
+
+    .particle {
+  width: 8px;
+  height: 8px;
+  background: #ffd700;
+  box-shadow: 0 0 5px #ffd700;
+  /* Removed border-radius to make square */
+  position: absolute;
+  animation: floatUp 3s linear forwards;
+}
+
+@keyframes floatUp {
+  to {
+    transform: translateY(-200px);
+    opacity: 0;
+  }
+}
+
+    @keyframes particleFloat {
+      0% { transform: translateY(0); opacity: 1; }
+      100% { transform: translateY(-400px); opacity: 0; }
+    }
+
+    @keyframes particleRotate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .invincible {
+      animation: damageBlink 0.2s infinite;
+    }
+
+    @keyframes damageBlink {
+      50% { opacity: 0.3; }
+    }
+
+    .victory-bg {
+      animation: containerVictory 4s forwards;
+    }
+
+    @keyframes containerVictory {
+      0% { background: #000; }
+      40% { background: #87CEEB; }
+      80% { background: #87CEEB; }
+      100% { opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="fade-overlay"></div>
+  <div class="game-container">
+    <div class="hearts">
+      <img src="heart.png" class="heart">
+      <img src="heart.png" class="heart">
+      <img src="heart.png" class="heart">
+      <img src="heart.png" class="heart">
+      <img src="heart.png" class="heart">
+    </div>
+
+    <div class="phase-display">Phase 1</div>
+
+    <div id="boss">
+      <img src="Flower/P1flower1.png" id="boss-image">
+    </div>
+
+    <div id="player">
+      <img src="plane.png">
+    </div>
+  </div>
+
+  <script>
+    let currentPhase = 1;
+    let health = 5;
+    let isInvincible = false;
+    let activeAttacks = [];
+    const boss = document.getElementById('boss');
+    const bossImage = document.getElementById('boss-image');
+    const player = document.getElementById('player');
+    const hearts = document.querySelectorAll('.heart');
+    const gameContainer = document.querySelector('.game-container');
+    let particleInterval;
+    let lastSmokeTime = 0;
+const smokeInterval = 100; // milliseconds between smoke particles
+let smokeParticles = [];
+
+    setTimeout(() => {
+      bossImage.src = 'Flower/P1flower1.png';
+      startPhase(1);
+    }, 2000);
+    function createSmokeTrail() {
+  const now = Date.now();
+  if (now - lastSmokeTime < smokeInterval) return;
+  
+  lastSmokeTime = now;
+
+  const smoke = document.createElement('div');
+  smoke.className = 'smoke-particle';
+  
+  // Calculate position based on movement direction
+  let offsetX, offsetY;
+  
+  if (keys['a']) { // Moving left
+    offsetX = 90; // Right side of plane
+    offsetY = 30;
+  } else if (keys['d']) { // Moving right
+    offsetX = -10; // Left side of plane
+    offsetY = 30;
+  } else {
+    // Default position when just moving up/down
+    offsetX = player.classList.contains('flipped') ? -10 : 90;
+    offsetY = 30;
+  }
+  
+  // Add slight randomness
+  offsetX += (Math.random() * 10 - 5);
+  offsetY += (Math.random() * 5 - 2.5);
+  
+  smoke.style.left = (parseInt(player.style.left || 50) + offsetX) + 'px';
+  smoke.style.top = (parseInt(player.style.top || 320) + offsetY) + 'px';
+  
+  // Randomize smoke appearance slightly
+  const size = 6 + Math.random() * 4;
+  smoke.style.width = `${size}px`;
+  smoke.style.height = `${size}px`;
+  smoke.style.opacity = 0.5 + Math.random() * 0.3;
+  smoke.style.background = `rgba(85, 85, 85, ${0.5 + Math.random() * 0.3})`;
+  
+  gameContainer.appendChild(smoke);
+  smokeParticles.push(smoke);
+  
+  setTimeout(() => {
+    smoke.remove();
+    smokeParticles = smokeParticles.filter(p => p !== smoke);
+  }, 1500);
+}
+
+    const keys = {};
+    document.addEventListener('keydown', e => keys[e.key.toLowerCase()] = true);
+    document.addEventListener('keyup', e => keys[e.key.toLowerCase()] = false);
+
+    function updatePlayer() {
+  let isMoving = false;
+  
+  if (keys['a']) {
+    player.style.left = Math.max(0, parseInt(player.style.left || 50) - 5) + 'px';
+    player.classList.remove('flipped');
+    isMoving = true;
+  }
+  if (keys['d']) {
+    player.style.left = Math.min(736, parseInt(player.style.left || 50) + 5) + 'px';
+    player.classList.add('flipped');
+    isMoving = true;
+  }
+  if (keys['w']) {
+    player.style.top = Math.max(0, parseInt(player.style.top || 320) - 5) + 'px';
+    isMoving = true;
+  }
+  if (keys['s']) {
+    player.style.top = Math.min(336, parseInt(player.style.top || 320) + 5) + 'px';
+    isMoving = true;
+  }
+  
+  // Only create smoke when actually moving
+  if (isMoving) {
+    createSmokeTrail();
+  }
+  
+  requestAnimationFrame(updatePlayer);
+}
+    updatePlayer();
+
+    class AttackManager {
+      static create(type, x, y, config = {}) {
+        const attack = document.createElement('div');
+        attack.className = `attack ${type}`;
+        attack.style.left = x + 'px';
+        attack.style.top = y + 'px';
+        gameContainer.appendChild(attack);
+        activeAttacks.push({ element: attack, config });
+        return attack;
+      }
+
+      static clearAll() {
+        activeAttacks.forEach(a => a.element.remove());
+        activeAttacks = [];
+      }
+    }
+
+    function petalWave() {
+  for (let i = 0; i < 8; i++) {
+    const angle = (Math.PI * 2) / 8 * i;
+    const petal = AttackManager.create('petal', boss.offsetLeft, boss.offsetTop, { 
+      angle, 
+      speed: 5 // Increased from 3 to 5
+    });
+    const vineBoom = new Audio("vineBoom.mp3");
+    vineBoom.play();
+    animateAttack({ element: petal, config: { angle, speed: 5 } });
+  }
+}
+
+function pollenBloom() {
+  for (let i = 0; i < 8; i++) { // Reduced from 20 to 8
+    setTimeout(() => {
+      const x = Math.random() * gameContainer.offsetWidth;
+      const cloud = AttackManager.create('pollen-cloud', x, 0, {});
+      cloud.style.left = x + 'px';
+      cloud.style.top = '0px';
+      
+      // Animation with collision checking
+      const animation = cloud.animate([
+        { top: '0px', opacity: 1 },
+        { top: '400px', opacity: 0 }
+      ], {
+        duration: 2000 + Math.random() * 1000,
+        easing: 'linear'
+      });
+      
+      // Continuous collision checking
+      const collisionInterval = setInterval(() => {
+        if (cloud.isConnected) checkCollision(cloud);
+      }, 50);
+      
+      animation.onfinish = () => {
+        cloud.remove();
+        clearInterval(collisionInterval);
+      };
+    }, i * 300); // Slower spawn rate
+  }
+}
+
+function thornBarrage() {
+  for (let i = 0; i < 8; i++) { // Reduced from 12 to 8
+    const angle = Math.atan2(
+      player.offsetTop - boss.offsetTop,
+      player.offsetLeft - boss.offsetLeft
+    ) + (Math.random() - 0.5) * 0.3; // Tighter spread
+    const thorn = AttackManager.create('thorn', boss.offsetLeft, boss.offsetTop, { 
+      angle, 
+      speed: 6 // Slightly faster
+    });
+    animateAttack({ element: thorn, config: { angle, speed: 6 } });
+  }
+}
+
+function vineLash() {
+  for (let i = 0; i < 3; i++) { // Reduced from 5 to 3
+    setTimeout(() => {
+      const x = Math.random() * (gameContainer.offsetWidth - 50) + 25;
+      const vine = AttackManager.create('vine', x, gameContainer.offsetHeight, {});
+      vine.style.left = x + 'px';
+      vine.style.bottom = '0px';
+      vine.style.top = 'auto';
+      
+      // Grow to top of container with fade out
+      vine.animate([
+        { height: '0px', opacity: 1 },
+        { height: '400px', opacity: 0 }
+      ], {
+        duration: 1500,
+        easing: 'ease-out'
+      });
+      
+      const collisionInterval = setInterval(() => checkCollision(vine), 50);
+      setTimeout(() => {
+        vine.remove();
+        clearInterval(collisionInterval);
+      }, 2000);
+    }, i * 1000); // Adjusted timing
+  }
+}
+
+function venomousVortex() {
+  for (let i = 0; i < 2; i++) { // Reduced from 3 to 2
+    setTimeout(() => {
+      const x = Math.random() * 600 + 100;
+      const y = Math.random() * 200 + 100;
+      
+      const indicator = AttackManager.create('vortex-indicator', x, y, {});
+      setTimeout(() => {
+        indicator.remove();
+        const vortex = AttackManager.create('vortex', x, y, {});
+        
+        // Continuous damage while in vortex
+        const damageInterval = setInterval(() => {
+          if (vortex.isConnected) checkCollision(vortex);
+        }, 100);
+        
+        setTimeout(() => {
+          vortex.remove();
+          clearInterval(damageInterval);
+        }, 3000);
+      }, 1000);
+    }, i * 1500); // More spread out
+  }
+}
+
+function laserStorm() {
+  for (let i = 0; i < 3; i++) {
+    setTimeout(() => {
+      const angle = Math.atan2(
+        player.offsetTop - boss.offsetTop,
+        player.offsetLeft - boss.offsetLeft
+      );
+      const laser = AttackManager.create('laser', boss.offsetLeft, boss.offsetTop, { 
+        angle, 
+        speed: 0 
+      });
+      laser.style.transform = `rotate(${angle}rad)`;
+      
+      // Damage during growth
+      const damageInterval = setInterval(() => {
+        if (laser.isConnected) checkCollision(laser);
+      }, 50);
+      
+      laser.animate([
+        { height: '0' },
+        { height: '400px' }
+      ], { 
+        duration: 500 
+      });
+      
+      setTimeout(() => {
+        laser.remove();
+        clearInterval(damageInterval);
+      }, 1000);
+    }, i * 1000);
+  }
+}
+
+// Replace the animateAttack function with this:
+function animateAttack(attack) {
+  const element = attack.element;
+  let x = parseInt(element.style.left);
+  let y = parseInt(element.style.top);
+  
+  function update() {
+    x += Math.cos(attack.config.angle) * attack.config.speed;
+    y += Math.sin(attack.config.angle) * attack.config.speed;
+    
+    element.style.left = x + 'px';
+    element.style.top = y + 'px';
+
+    if (x < -100 || x > 900 || y < -100 || y > 500) {
+      element.remove();
+      return;
+    }
+
+    checkCollision(element);
+    requestAnimationFrame(update);
+  }
+  update();
+}
+
+    function checkCollision(element) {
+      if (isInvincible || !element.isConnected) return;
+      
+      const playerRect = player.getBoundingClientRect();
+      const attackRect = element.getBoundingClientRect();
+      
+      if (!(
+        attackRect.right < playerRect.left || 
+        attackRect.left > playerRect.right || 
+        attackRect.bottom < playerRect.top || 
+        attackRect.top > playerRect.bottom
+      )) {
+        takeDamage();
+      }
+    }
+
+    function takeDamage() {
+      if (isInvincible) return;
+      
+      health--;
+      hearts[health].style.opacity = '0.3';
+      isInvincible = true;
+      player.classList.add('invincible');
+      
+      setTimeout(() => {
+        isInvincible = false;
+        player.classList.remove('invincible');
+      }, 1000);
+
+      if (health <= 0) window.location.href = 'gameOver.html';
+    }
+
+    function startPhase(phase) {
+  if (phase > 3) {
+    gameContainer.classList.add('victory-bg');
+    setTimeout(() => {
+      document.body.style.background = '#000';
+      setTimeout(() => window.location.href = 'winner.html', 2000);
+    }, 3000);
+    return;
+  }
+
+  // Clear existing attacks and stop particles
+  AttackManager.clearAll();
+  if (particleInterval) clearInterval(particleInterval);
+
+  // Start transition effect
+  document.querySelector('.phase-display').textContent = `Phase ${phase}`;
+  currentPhase = phase;
+  
+  // Blinking transition effect
+  let blinkCount = 0;
+  const maxBlinks = 5;
+  const blinkInterval = setInterval(() => {
+    blinkCount++;
+    if (blinkCount % 2 === 0) {
+      bossImage.style.filter = 'brightness(3)';
+    } else {
+      bossImage.style.filter = 'brightness(0.2)';
+    }
+    
+    if (blinkCount >= maxBlinks * 2) {
+      clearInterval(blinkInterval);
+      completePhaseTransition(phase);
+    }
+  }, 200);
+}
+function completePhaseTransition(phase) {
+  // Finalize transition
+  bossImage.src = `Flower/P${phase}flower1.png`;
+  bossImage.style.filter = 'brightness(1)';
+  boss.classList.add('phase-transition');
+
+  // Start phase-specific elements
+  if (phase >= 2) {
+    particleInterval = setInterval(() => {
+      createParticles(phase === 2 ? 5 : 15);
+    }, 500);
+  }
+
+  const attacks = {
+    1: [petalWave, pollenBloom],
+    2: [thornBarrage, vineLash],
+    3: [venomousVortex, laserStorm]
+  };
+
+  const attackInterval = setInterval(() => {
+    attacks[phase].forEach(attack => attack());
+  }, 2000);
+
+  setTimeout(() => {
+    clearInterval(attackInterval);
+    clearInterval(particleInterval);
+    startPhase(phase + 1);
+  }, 30000);
+}
+function createParticles(count, x=null, y=null, color='#ffd700') {
+  for (let i = 0; i < count; i++) {
+    setTimeout(() => {
+      const particle = document.createElement('div');
+      particle.className = 'particle';
+      particle.style.left = (x || Math.random() * 800) + 'px';
+      particle.style.top = (y || gameContainer.offsetHeight) + 'px';
+      particle.style.background = color;
+      particle.style.boxShadow = `0 0 5px ${color}`;
+      
+      // Make sure it's square by removing any border-radius
+      particle.style.borderRadius = '0';
+      
+      gameContainer.appendChild(particle);
+      
+      particle.animate([
+        { top: particle.style.top, opacity: 1 },
+        { top: (parseInt(particle.style.top) - 200) + 'px', opacity: 0 }
+      ], {
+        duration: 3000,
+        easing: 'linear'
+      });
+      
+      setTimeout(() => particle.remove(), 3000);
+    }, i * 100);
+  }
+}
+
+  </script>
+</body>
+</html>

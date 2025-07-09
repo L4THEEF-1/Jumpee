@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main Menu</title>
+    <style>
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    justify-content: center;
+    display: flex;
+    align-items: center;
+    height: 100vh;
+    background-color: #000000;
+    overflow: hidden;
+}
+
+@font-face {
+    font-family: "bpx"; 
+    src: url('dogicabold.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: "px"; 
+    src: url('dogica.ttf') format('truetype');
+}
+
+.menu-screen {
+    text-align: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 30px;
+    border-radius: 10px;
+    color: white;
+}
+
+.levContainer {
+    font-family: "bpx";
+    border: 5px solid white;
+    padding: 10px;
+    background-color: black;
+    z-index: 9999;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    animation: slideFromRight 1s ease;
+}
+
+.levContainer a {
+    color: white;
+    text-decoration: none;
+    transition: color 1s ease;
+}
+
+.levContainer:hover {
+    background-color: white;
+}
+
+.levContainer a:hover {
+    color: black;
+}
+
+
+
+.particles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none; 
+}
+
+.particle {
+    position: absolute;
+    bottom: 0;
+    width: 10px;
+    height: 10px;
+    background-color: white;
+    opacity: 0;
+    animation: floatUp 5s linear infinite, fadeOut 5s forwards;
+}
+
+@keyframes floatUp {
+    0% {
+        bottom: 0;
+        opacity: 1;
+    }
+    100% {
+        bottom: 100vh;
+        opacity: 0;
+    }
+}
+
+@keyframes slideFromRight {
+    0% {
+        left: 100vh;
+    }
+    50% {
+        left: 50vh;
+    }
+    100% {
+        left: 0vh;
+    }
+}
+
+
+    </style>
+</head>
+<body>
+    <div class="menu-screen">
+        <div class="levContainer">
+            <h1><a href="prebegin.html">L1: Your Eyes Are Fooled</a></h1>
+        </div>
+       
+
+        <br><br>
+
+        <div class="levContainer">
+            <h1><a href="doorOpener.html">L2: You Are What You Eat</a></h1>
+        </div>
+
+
+        <br><br>
+        
+        <audio id="gameStartSound">
+            <source src="gameStart.mp3" type="audio/mpeg">
+        </audio>
+        <div class="levContainer">
+            <h1><a href="plane.html">L3: The Escape From The Underworld</a></h1>
+        </div>
+
+        
+        </div>  
+    </div>
+
+    <div class="particles"></div>
+
+    <script>
+        // Play sound when any level is clicked
+        document.querySelectorAll('.levContainer a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault(); // Prevent immediate navigation
+                
+                // Play the sound
+                const sound = document.getElementById('gameStartSound');
+                sound.currentTime = 0; // Rewind to start if already playing
+                sound.play();
+                
+                // Navigate after sound starts playing
+                setTimeout(() => {
+                    window.location.href = this.getAttribute('href');
+                }, 300); // Short delay to ensure sound plays
+            });
+        });
+
+        // Particle effect code (keep your existing code)
+        const particlesContainer = document.querySelector('.particles');
+        function createParticle() {
+            const particle = document.createElement('div');
+            particle.classList.add('particle');
+            particle.style.left = Math.random() * 100 + 'vw';
+            particle.style.animationDuration = Math.random() * 5 + 3 + 's';
+            particlesContainer.appendChild(particle);
+            setTimeout(() => {
+                particle.remove();
+            }, 8000);
+        }
+        setInterval(createParticle, 100);
+    </script>
+</body>
+</html>

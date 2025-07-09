@@ -1,0 +1,121 @@
+/* Basic reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  /* Center the game container on the page */
+  body {
+    background-color: #000;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  /* Game container styling */
+  .game-container {
+    position: relative;
+    width: 800px;
+    height: 400px;
+    background-color: #000;
+    border: 2px solid #fff;
+    overflow: hidden;
+  }
+  
+  /* Health display on the top-left */
+  .healthDisplay {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    display: flex;
+    gap: 5px;
+    z-index: 20;
+  }
+  
+  .heart {
+    width: 30px;
+    height: 30px;
+  }
+  
+  /* Door styles:
+     A narrower rectangle with solid blue color (matching the key),
+     no border, just a glowing effect.
+     Its z-index is low so the player appears in front. */
+  .door {
+    position: absolute;
+    right: 180px;       /* Adjust as needed */
+    bottom: 20px;       /* Aligned with the platform */
+    width: 60px;
+    height: 120px;
+    background-color: blue; /* Matches key color */
+    border: none;
+    box-shadow: 0 0 15px 5px blue; /* Glowing effect */
+    z-index: 5;
+  }
+  
+  /* Door prompt styling:
+     Positioned directly above the door; it fades in when the player is near and fades out otherwise. */
+  #doorPrompt {
+    position: absolute;
+    right: 180px;
+    bottom: 150px; /* door's bottom (20) + door's height (120) + extra 10px */
+    transform: translateX(50%);
+    color: white;
+    font-size: 16px;
+    font-family: "bpx", sans-serif;
+    z-index: 25;
+    opacity: 0;  /* Initially hidden */
+    transition: opacity 0.5s ease;
+  }
+  
+  /* Player styling:
+     Note the z-index: the player is set to a high value so it appears in front of the door. */
+  .player {
+    position: absolute;
+    left: 50px;
+    bottom: 20px;  /* This serves as ground level for jumping */
+    width: 50px;
+    height: 50px;
+    z-index: 30;
+  }
+  .player img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    image-rendering: pixelated; /* Crisp, pixelated look */
+  }
+  
+  /* Platform styling */
+  .platform {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 20px;
+    background-color: #fff;
+  }
+  
+  /* Old invincibility blinking effect */
+  @keyframes blinkWhiteBlack {
+    0% { filter: brightness(100%); }
+    50% { filter: brightness(0); }
+    100% { filter: brightness(100%); }
+  }
+  .invincible {
+    animation: blinkWhiteBlack 0.3s infinite alternate;
+  }
+  
+  /* Font faces */
+  @font-face {
+    font-family: "bpx"; 
+    src: url('dogicabold.ttf') format('truetype');
+  }
+  
+  @font-face {
+    font-family: "px"; 
+    src: url('dogica.ttf') format('truetype');
+  }
+  

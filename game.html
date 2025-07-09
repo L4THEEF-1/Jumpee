@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>JUMPEE | Game</title>
+  <link rel="icon" type="image/png" href="media/JUMPEE.png" />
+  <link rel="stylesheet" href="style1.css">
+</head>
+
+<body>
+  
+  <input type="checkbox" id="menu-toggle" />
+  <header>
+
+    <div class="logo">
+      <img src="media/Logo.png"/>
+    </div>
+
+    <nav class="nav-center">
+      <a href="index.html">Home</a>
+      <span style="opacity: 40%;">|</span>
+      <a style="text-shadow: 0 0 12px #fff;" href="game.html">Game</a>
+      <span style="opacity: 40%;">|</span>
+      <a href="history.html">History</a>
+    </nav>
+
+    <div class="nav-right">
+      <div class="dropdown">
+        <button class="btn dev-btn">Creator ▼</button>
+        <div class="dropdown-content">
+          <a href="adam.html">Adam</a>
+          <a href="latheef.html">Latheef</a>
+          <a href="team.html">Our Team</a>
+        </div>
+      </div>
+      <a href="intro.html"><button class="btn outline-btn">Game ▸</button></a>
+    </div>
+
+    <label for="menu-toggle" class="hamburger">
+      <span></span>
+      <span></span>
+      <span></span>
+    </label>
+  </header>
+
+  <div class="sidebar">
+    <label for="menu-toggle">
+      <span><h3>✖</h3></span>
+    </label>
+  </header>
+    <a href="index.html">Home</a>
+    <a href="game.html">Game</a>
+    <a href="history.html">History</a>
+    <div class="dropdown">
+      <button class="btn dev-btn">Creator ▼</button>
+      <div class="dropdown-content" style="right: 59.5px;">
+        <a href="adam.html">Adam</a>
+        <a href="latheef.html">Latheef</a>
+        <a href="team.html">Our Team</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="game-page">
+
+    <h2 class="section-title">BOSSES</h2>
+    <div class="boss-gallery">
+      <img src="media/Eyes/P1eye2.png" alt="Boss Eye" onclick="openModal(this)">
+      <img src="media/Mouth/P1mouth1.png" alt="Boss Mouth" onclick="openModal(this)">
+      <img src="media/Flower/P1flower1.png" alt="Boss Flower" onclick="openModal(this)">
+    </div>
+
+    <h2 class="section-title">PIXEL ARTS</h2>
+    <div class="art-gallery">
+      <img src="media/Glove/PL1.png" alt="Glove Pixel Art" onclick="openModal(this)">
+      <img src="media/plane.png" alt="Plane Pixel Art" onclick="openModal(this)">
+      <img src="media/bird.png" alt="Plane Pixel Art" onclick="openModal(this)">
+      <img src="media/Cloud/cloud1.png" alt="Glove Pixel Art" onclick="openModal(this)">
+    </div>
+  </div>
+
+  <!-- boss desc -->
+  <div id="imgModal" class="modal" onclick="closeModal()">
+    <span class="close">&times;</span>
+    <img class="modal-content" id="modalImage">
+  </div>
+
+
+<script src="web.js"></script>
+</body>
+</html>

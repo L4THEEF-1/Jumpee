@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Door Opener Level</title>
+  <style>
+    /* Basic reset */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    /* Center the game container on the page */
+    body {
+      background-color: #000;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    
+    /* Game container styling */
+    .game-container {
+      position: relative;
+      width: 800px;
+      height: 400px;
+      background-color: #000;
+      border: 2px solid #fff;
+      overflow: hidden;
+    }
+    
+    /* Health display on the top-left */
+    .healthDisplay {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      display: flex;
+      gap: 5px;
+      z-index: 20;
+    }
+    
+    .heart {
+      width: 30px;
+      height: 30px;
+    }
+    
+    /* Plane styles: bigger and starting with "emptyPlane.png" */
+    .plane {
+      position: absolute;
+      right: 180px;
+      bottom: 20px;
+      width: 200px;
+      height: 120px;
+      background-image: url('emptyPlane.png');
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      z-index: 5;
+    }
+    
+    /* Plane prompt styling with two lines */
+    #planePrompt {
+      position: absolute;
+      right: 180px;
+      bottom: 140px; /* Adjusted relative to the new plane height */
+      transform: translateX(50%);
+      color: white;
+      font-size: 16px;
+      font-family: "bpx", sans-serif;
+      z-index: 25;
+      opacity: 0;
+      max-width: 120px;
+      text-align: center;
+      white-space: normal;
+      transition: opacity 0.5s ease;
+    }
+    
+    /* Player styling */
+    .player {
+      position: absolute;
+      left: 50px;
+      bottom: 20px;  /* ground level */
+      width: 50px;
+      height: 50px;
+      z-index: 30;
+    }
+    .player img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      image-rendering: pixelated;
+    }
+    
+    /* Platform styling */
+    .platform {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 20px;
+      background-color: #fff;
+    }
+    
+    /* Invincibility blinking effect */
+    @keyframes blinkWhiteBlack {
+      0% { filter: brightness(100%); }
+      50% { filter: brightness(0); }
+      100% { filter: brightness(100%); }
+    }
+    .invincible {
+      animation: blinkWhiteBlack 0.3s infinite alternate;
+    }
+    
+    /* Font faces */
+    @font-face {
+      font-family: "bpx"; 
+      src: url('dogicabold.ttf') format('truetype');
+    }
+    
+    @font-face {
+      font-family: "px"; 
+      src: url('dogica.ttf') format('truetype');
+    }
+    
+    /* Fly-away animation: now flies to the left by increasing the "right" offset */
+    @keyframes flyAway {
+      0% {
+        right: 180px;
+        bottom: 20px;
+      }
+      50% {
+        right: 180px;
+        bottom: 150px;
+      }
+      100% {
+        right: 900px; /* larger right value pushes the plane off-screen to the left */
+        bottom: 150px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="game-container">
+    <!-- Health display on the top-left -->
+    <div class="healthDisplay">
+      <img src="heart.png" alt="Heart" class="heart" id="heart1" />
+      <img src="heart.png" alt="Heart" class="heart" id="heart2" />
+      <img src="heart.png" alt="Heart" class="heart" id="heart3" />
+      <img src="heart.png" alt="Heart" class="heart" id="heart4" />
+      <img src="heart.png" alt="Heart" class="heart" id="heart5" />
+    </div>
+    
+    <!-- The plane (replacing the door) -->
+    <div class="plane"></div>
+    
+    <!-- Prompt above the plane (two lines) -->
+    <div id="planePrompt">Press F to<br>enter the plane</div>
+    
+    <!-- The player -->
+    <div class="player">
+      <img src="player.png" alt="Player" />
+    </div>
+    
+    <!-- The platform -->
+    <div class="platform"></div>
+  </div>
+  
+  <script>
+    /* =====================
+       SMOOTH PLAYER MOVEMENT WITH JUMPING
+       ===================== */
+    const player = document.querySelector('.player');
+    const gameContainer = document.querySelector('.game-container');
+    const plane = document.querySelector('.plane');
+    const planePrompt = document.getElementById('planePrompt');
+    
+    const keys = {};
+    let playerX = 50;
+    let playerY = 20;
+    let velocityY = 0;
+    const moveSpeed = 4;
+    const jumpStrength = 10;
+    const gravity = 0.6;
+    const groundLevel = 20;
+    
+    document.addEventListener('keydown', (e) => {
+      keys[e.key.toLowerCase()] = true;
+    });
+    document.addEventListener('keyup', (e) => {
+      keys[e.key.toLowerCase()] = false;
+    });
+    
+    function updatePlayer() {
+      if (keys["arrowleft"] || keys["a"]) {
+        playerX = Math.max(0, playerX - moveSpeed);
+      }
+      if (keys["arrowright"] || keys["d"]) {
+        playerX = Math.min(gameContainer.offsetWidth - player.offsetWidth, playerX + moveSpeed);
+      }
+      if ((keys["arrowup"] || keys["w"] || keys[" "]) && playerY === groundLevel) {
+        velocityY = jumpStrength;
+      }
+      if (playerY > groundLevel || velocityY > 0) {
+        playerY += velocityY;
+        velocityY -= gravity;
+      }
+      if (playerY < groundLevel) {
+        playerY = groundLevel;
+        velocityY = 0;
+      }
+      
+      player.style.left = playerX + "px";
+      player.style.bottom = playerY + "px";
+      
+      checkPlaneProximity();
+      
+      requestAnimationFrame(updatePlayer);
+    }
+    updatePlayer();
+    
+    /* =====================
+       HEALTH AND DAMAGE LOGIC
+       ===================== */
+    const maxHealth = 5;
+    let playerHealth = maxHealth;
+    let isInvincible = false;
+    
+    function reduceHeart() {
+      if (isInvincible) return;
+      if (playerHealth > 0) {
+        const targetIndex = maxHealth - playerHealth + 1;
+        const heart = document.getElementById(`heart${targetIndex}`);
+        if (heart) { heart.style.opacity = "0.3"; }
+        showFloatingDamage();
+        playerHealth--;
+        console.log("Player hit! Remaining health: " + playerHealth);
+        isInvincible = true;
+        showDamageIndicator();
+        setPlayerInvincible(3000);
+        setTimeout(() => { isInvincible = false; }, 3000);
+      }
+      if (playerHealth === 0) {
+        console.log("Game Over");
+        window.location.href = "gameOver.html";
+      }
+    }
+    
+    function showFloatingDamage() {
+      const floatElem = document.createElement('div');
+      floatElem.textContent = "-1";
+      floatElem.style.position = "absolute";
+      const playerRect = player.getBoundingClientRect();
+      const containerRect = gameContainer.getBoundingClientRect();
+      const leftPos = playerRect.left - containerRect.left + (playerRect.width / 2) - 10;
+      const topPos = playerRect.top - containerRect.top - 30;
+      floatElem.style.left = leftPos + "px";
+      floatElem.style.top = topPos + "px";
+      floatElem.style.color = "white";
+      floatElem.style.fontSize = "20px";
+      floatElem.style.fontFamily = "bpx";
+      floatElem.style.opacity = "1";
+      floatElem.style.zIndex = "40";
+      gameContainer.appendChild(floatElem);
+      setTimeout(() => {
+        floatElem.style.transition = "opacity 1s ease-out, top 1s ease-out";
+        floatElem.style.opacity = "0";
+        floatElem.style.top = (topPos - 20) + "px";
+      }, 100);
+      setTimeout(() => {
+        if (gameContainer.contains(floatElem)) {
+          gameContainer.removeChild(floatElem);
+        }
+      }, 1100);
+    }
+    
+    function showDamageIndicator() {
+      player.style.filter = "brightness(0.5)";
+      setTimeout(() => { player.style.filter = ""; }, 200);
+    }
+    
+    function setPlayerInvincible(duration) {
+      player.classList.add("invincible");
+      setTimeout(() => { player.classList.remove("invincible"); }, duration);
+    }
+    
+    /* =====================
+       PLANE ENTERING LOGIC
+       ===================== */
+    let doorOpenTriggered = false;
+    
+    function checkPlaneProximity() {
+      const playerRect = player.getBoundingClientRect();
+      const planeRect = plane.getBoundingClientRect();
+      let isNear = false;
+      if (
+        playerRect.right > planeRect.left &&
+        playerRect.left < planeRect.right &&
+        playerRect.bottom > planeRect.top &&
+        playerRect.top < planeRect.bottom
+      ) {
+        isNear = true;
+      }
+      planePrompt.style.opacity = (isNear && !doorOpenTriggered) ? '1' : '0';
+    }
+    
+    // Listen for the "F" key near the plane
+    document.addEventListener('keydown', (e) => {
+      if (e.key.toLowerCase() === 'f' && planePrompt.style.opacity === '1' && !doorOpenTriggered) {
+        planeEnterSequence();
+      }
+    });
+    
+    function planeEnterSequence() {
+      doorOpenTriggered = true;
+      planePrompt.style.opacity = '0';
+      
+      // Hide the player
+      player.style.display = 'none';
+      
+      // Change the plane's image to include the player onboard
+      plane.style.backgroundImage = "url('plane.png')";
+      
+      // Trigger the fly-away animation (now flies to the left)
+      plane.style.animation = "flyAway 2.5s ease-out forwards";
+      
+      // Create a fade-to-black overlay after a delay
+      const fadeDiv = document.createElement('div');
+      fadeDiv.style.position = 'absolute';
+      fadeDiv.style.top = '0';
+      fadeDiv.style.left = '0';
+      fadeDiv.style.width = '100%';
+      fadeDiv.style.height = '100%';
+      fadeDiv.style.backgroundColor = 'black';
+      fadeDiv.style.opacity = '0';
+      fadeDiv.style.transition = 'opacity 2s ease-out';
+      fadeDiv.style.zIndex = '50';
+      gameContainer.appendChild(fadeDiv);
+      
+      setTimeout(() => {
+        fadeDiv.style.opacity = '1';
+      }, 2200);
+      
+      setTimeout(() => {
+        window.location.href = 'bossThree.html';
+      }, 4500);
+    }
+  </script>
+</body>
+</html>

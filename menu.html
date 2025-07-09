@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jumpee</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="menuBody">
+    <div class="menu-screen">
+        <h1 class="title" align="center">Jumpee</h1>
+        <br><br>
+        <p class="tagline">Monsters beware.</p>
+        <br>
+        <button id="start-btn">Begin</button>
+        
+    </div>
+
+    <audio autoplay loop>
+        <source src="menMus.mp3" type="audio/mp3">
+      </audio>
+    
+    <div class="particles"></div>
+
+    <script>
+        const startBtn = document.getElementById('start-btn');
+    const particlesContainer = document.querySelector('.particles');
+    
+    const audio = new Audio('gameStart.mp3'); 
+    
+    startBtn.addEventListener('click', () => {
+
+        audio.play();
+        startBtn.classList.add('fade');
+
+        audio.addEventListener('ended', () => {
+            window.location.href = 'levels.html';  
+        });
+    });
+
+        function createParticle() {
+            const particle = document.createElement('div');
+            particle.classList.add('particle');
+            particle.style.left = Math.random() * 100 + 'vw';
+            particle.style.animationDuration = Math.random() * 5 + 3 + 's';
+            particlesContainer.appendChild(particle);
+            setTimeout(() => {
+                particle.remove();
+            }, 8000);
+        }
+
+        setInterval(createParticle, 100);
+    </script>
+</body>
+</html>

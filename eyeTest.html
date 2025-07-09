@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blinking Eye Animation</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #222;
+        }
+        .eye {
+            width: 100px;
+            height: 100px;
+            background: url('eyes/Eyes/P1eye1.png') no-repeat center/cover;
+            position: relative;
+            animation: blink 3.5s infinite;
+        }
+        @keyframes blink {
+            0%, 85% { background-image: url('eyes/Eyes/P1eye1.png'); } /* Eye stays open for 1.5s */
+            86.5% { background-image: url('eyes/Eyes/P1eye2.png'); }
+            88% { background-image: url('eyes/Eyes/P1eye3.png'); }
+            89.5% { background-image: url('eyes/Eyes/P1eye4.png'); }
+            91% { background-image: url('eyes/Eyes/P1eye5.png'); }
+            92.5% { background-image: url('eyes/Eyes/closedEye.png'); } /* Fully closed */
+            94% { background-image: url('eyes/Eyes/P1eye5.png'); }
+            95.5% { background-image: url('eyes/Eyes/P1eye4.png'); }
+            97% { background-image: url('eyes/Eyes/P1eye3.png'); }
+            98.5% { background-image: url('eyes/Eyes/P1eye2.png'); }
+            100% { background-image: url('eyes/Eyes/P1eye1.png'); } /* Fully open */
+        }
+    </style>
+</head>
+<body>
+    <div class="eye"></div>
+</body>
+</html>

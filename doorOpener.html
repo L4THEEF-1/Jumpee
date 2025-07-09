@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Level 2</title>
+  <link rel="stylesheet" href="doorOpener.css" />
+</head>
+<body>
+  <div class="game-container">
+    <!-- Health display on the top-left -->
+    <div class="healthDisplay">
+      <img src="heart.png" alt="Heart" class="heart" id="heart1" />
+      <img src="heart.png" alt="Heart" class="heart" id="heart2" />
+      <img src="heart.png" alt="Heart" class="heart" id="heart3" />
+      <img src="heart.png" alt="Heart" class="heart" id="heart4" />
+      <img src="heart.png" alt="Heart" class="heart" id="heart5" />
+    </div>
+    
+    <!-- The door (a blue glowing rectangle) -->
+    <div class="door"></div>
+    
+    <!-- Door prompt: positioned directly above the door, fades in/out -->
+    <div id="doorPrompt">Press E to open</div>
+    
+    <!-- The player -->
+    <div class="player">
+      <img src="player.png" alt="Player" />
+    </div>
+    
+    <!-- The platform -->
+    <div class="platform"></div>
+  </div>
+  
+  <script src="doorOpener.js"></script>
+</body>
+</html>

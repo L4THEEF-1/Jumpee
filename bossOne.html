@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Level 1</title>
+  <link rel="stylesheet" href="bossOne.css" />
+</head>
+<body>
+    <div class="fade-overlay"></div>
+    <div class="phase-transition-overlay"></div>
+    
+  <div class="game-container">
+    <audio id="bossMusic" src="eyeMusic.mp3" autoplay loop muted></audio>
+    <div class="healthDisplay">
+      <img src="heart.png" class="heart" id="heart1" />
+      <img src="heart.png" class="heart" id="heart2" />
+      <img src="heart.png" class="heart" id="heart3" />
+      <img src="heart.png" class="heart" id="heart4" />
+      <img src="heart.png" class="heart" id="heart5" />
+    </div>
+
+    <div class="player">
+      <img src="player.png" />
+    </div>
+
+    <div class="hand">
+      <img src="gloves/PR2.png" />
+    </div>
+       
+    <div class="hand hand2">
+      <img src="gloves/PL2.png" alt="Attack Hand" />
+    </div>
+    
+    <div class="platform"></div>
+    <div class="blood-container"></div>
+    <div class="pupil-vortex"></div>
+
+    <div class="text-container" id="text">work please</div>
+    <div class="eye"></div>
+  </div>
+
+  <script src="bossOne.js" defer></script>
+</body>
+</html>

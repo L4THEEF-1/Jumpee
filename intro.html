@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jumpee</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: black;
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+            overflow: hidden;
+            flex-direction: column;
+        }
+
+        .fade-text {
+            opacity: 0;
+            font-size: 2rem;
+            transition: opacity 1s;
+            white-space: nowrap;
+            font-family: "bpx";
+        }
+
+        @font-face {
+            font-family: "bpx"; 
+            src: url('dogicabold.ttf') format('truetype');
+        }
+    </style>
+</head>
+<body>
+
+    <div id="text-container"></div>
+
+    <script>
+        const texts = [
+            "From the creators of Birduyo & Penguin Kingdom",
+            "We present to you..."
+        ];
+
+        const textContainer = document.getElementById('text-container');
+
+        function fadeText(text) {
+            return new Promise((resolve) => {
+                const span = document.createElement('span');
+                span.classList.add('fade-text');
+                span.textContent = text;
+                textContainer.appendChild(span);
+
+                setTimeout(() => {
+                    span.style.opacity = 1;
+                }, 10);
+
+                setTimeout(() => {
+                    span.style.opacity = 0;
+                }, 2000);
+
+                setTimeout(() => {
+                    textContainer.removeChild(span);
+                    resolve();
+                }, 3000);
+            });
+        }
+
+        async function startTextCycle() {
+            for (let i = 0; i < texts.length; i++) {
+                await fadeText(texts[i]);
+            }
+
+            window.location.href = "menu.html";
+        }
+
+        window.onload = startTextCycle;
+    </script>
+
+</body>
+</html>
